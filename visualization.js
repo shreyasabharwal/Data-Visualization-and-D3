@@ -31,10 +31,10 @@ var data;
 var color = d3.scaleOrdinal().range(["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6",
 	"#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499"]);
 
-var circleOpacity = '0.65';
-var circleOpacityOnLineHover = "0.25"
-var circleRadius = 3;
-var circleRadiusHover = 9;
+// var circleOpacity = '0.65';
+// var circleOpacityOnLineHover = "0.25"
+// var circleRadius = 3;
+// var circleRadiusHover = 9;
 var duration = 250;
 
 var lineOpacity = "0.5";
@@ -108,14 +108,18 @@ function update(data, xScale, yScale, ycolumn = "totalPopulation", filter = fals
 		return ('Region: ' + d.region)
 	});
 
+	//circle start
+	/* Add circles in the line */
+	//circle end
+
 
 	if (filter == false) {
 		present.style('opacity', lineOpacity)
 			.on("mouseover", function (d) {
 				d3.selectAll('.line')
 					.style('opacity', otherLinesOpacityHover);
-				d3.selectAll('.circle')
-					.style('opacity', circleOpacityOnLineHover);
+				// d3.selectAll('.circle')
+				// 	.style('opacity', circleOpacityOnLineHover);
 				d3.select(this)
 					.style('opacity', lineOpacity)
 					.style("stroke-width", lineStrokeHover)
@@ -124,15 +128,13 @@ function update(data, xScale, yScale, ycolumn = "totalPopulation", filter = fals
 			.on("mouseout", function (d) {
 				d3.selectAll(".line")
 					.style('opacity', lineOpacity);
-				d3.selectAll('.circle')
-					.style('opacity', circleOpacity);
+				// d3.selectAll('.circle')
+				// 	.style('opacity', circleOpacity);
 				d3.select(this)
 					.style("stroke-width", lineStroke)
 					.style("cursor", "none");
 			});
 	}
-
-
 
 
 	//	if (filter == false) {
@@ -160,12 +162,8 @@ function update(data, xScale, yScale, ycolumn = "totalPopulation", filter = fals
 
 		d3.select('.line').select('title').text('Region: ' + filteredData[0]["region"]);
 
-		// circle start
-		createCircles(formatData(filteredData, ycolumn), xScale, yScale, ycolumn)
-		// circle end
 	});
 	//	}
-
 
 	if (filter == true) {
 		present.style('opacity', lineOpacityHover)
@@ -196,7 +194,7 @@ function update(data, xScale, yScale, ycolumn = "totalPopulation", filter = fals
 
 
 	lines.exit().remove();
-	plot.selectAll("circle").exit().remove()
+
 	//addLegend(color);
 
 }
@@ -221,7 +219,7 @@ function createScale(data, islog, ycolumn = "totalPopulation") {
 	var yScale;
 	if (islog == true) {
 		yScale = d3.scaleLog()
-			.domain([minY, maxY])
+			.domain([minY * 0.9, maxY])
 			.range([displayHeight, 0]);
 	} else {
 		yScale = d3.scaleLinear()
@@ -328,7 +326,8 @@ async function createplot() {
 d3.select('#submit').on('click', function () {
 	var region = d3.select('#region').property('value');
 	var gender = d3.selectAll("input[name='gender']:checked").property('value');
-	var ycolumn, islog = false;
+	//var ycolumn, islog = false;
+	var ycolumn, islog = true;
 	if (gender === 'male') {
 		ycolumn = 'malePopulation'
 	} else if (gender === 'female') {
@@ -370,18 +369,21 @@ d3.selectAll("input[name='gender']").on("change", function () {
 	} else {
 		islog = false;
 	}
+	//delete
+	islog = true;
+	var genData = data;
 	// filtering data for Total population of all males
 	if (region != "") {
-		data = data.filter(function (row) {
+		genData = data.filter(function (row) {
 			return (row.region.toLowerCase() == region.toLowerCase());
 		});
 	}
 
-	var scale = createScale(data, islog, ycolumn);
+	var scale = createScale(genData, islog, ycolumn);
 	var xScale = scale[0];
 	var yScale = scale[1];
 	drawAxis(xScale, yScale);
-	update(data, xScale, yScale, ycolumn = ycolumn);
+	update(genData, xScale, yScale, ycolumn = ycolumn);
 });
 
 // create legend
@@ -420,8 +422,9 @@ function addLegend(color) {
 	legend.exit().remove();
 
 	present.on("click", function (type) {
+		d3.select('#region').property('value', type);
 		// dim all of the icons in legend
-		d3.selectAll(".circle").style("opacity", 0);
+		//d3.selectAll(".circle").style("opacity", 0);
 		d3.selectAll(".legend")
 			.style("opacity", 0.1);
 		// make the one selected be un-dimmed
@@ -433,6 +436,7 @@ function addLegend(color) {
 		var regdata = data.filter(function (row) {
 			return (row.region.toLowerCase() == type.toLowerCase());
 		});
+
 
 		var gender = d3.selectAll("input[name='gender']:checked").property('value');
 		var ycolumn, islog;
@@ -446,75 +450,20 @@ function addLegend(color) {
 			ycolumn = 'totalPopulation';
 		}
 
-		islog = false;
+		//islog = false;
+		//delete
+		islog = true;
 		var scale = createScale(regdata, islog, ycolumn);
 		var xScale = scale[0];
 		var yScale = scale[1];
 		drawAxis(xScale, yScale);
 		update(regdata, xScale, yScale, ycolumn = ycolumn);
 
-		createCircles(formatData(regdata, ycolumn), xScale, yScale, ycolumn)
 
-		plot.selectAll("circle").exit().remove()
 
 	});
 }
 
-function createCircles(data, xScale, yScale, ycolumn) {
-	plot.selectAll("circle-group")
-		.data(data).enter()
-		.append("g")
-		.style("fill", (d, i) => color(i))
-		.selectAll("circle")
-		.data(d => d.values).enter()
-		.append("g")
-		.attr("class", "circle")
-		.on("mouseover", function (d) {
-			//if (filter == true) {
-			d3.select(this)
-				.style("cursor", "pointer")
-				.append("text")
-				.attr("class", "text")
-				.text(function (d) { return d[ycolumn] })
-				.attr("x", d => xScale(d.year) + 5)
-				.attr("y", d => yScale(d[ycolumn]) - 10);
-			//}
-		})
-		.on("mouseout", function (d) {
-			//if (filter == true) {
-			d3.select(this)
-				.style("cursor", "none")
-				.transition()
-				.duration(duration)
-				.selectAll(".text").remove()
-			//}
-		})
-		.append("circle")
-		.attr("cx", d => xScale(d.year))
-		.attr("cy", d => yScale(d[ycolumn]))
-		.attr("r", circleRadius)
-		.style('opacity', circleOpacity)
-		.on("mouseover", function (d) {
-			//if (filter == true) {
-			d3.select(this)
-				.transition()
-				.duration(duration)
-				.attr("r", circleRadiusHover)
-				.style('opacity', circleOpacityHover)
-			//.text(function (d) { return d[ycolumn] });
-			//}
-		})
-		.on("mouseout", function (d) {
-			//if (filter == true) {
-			d3.select(this)
-				.transition()
-				.duration(duration)
-				.attr("r", circleRadius)
-				.style('opacity', circleOpacity);
-			//}
-		});
-
-}
 
 
 createplot();
