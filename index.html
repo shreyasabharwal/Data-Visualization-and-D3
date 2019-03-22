@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GLOBAL POPULATION OVER THE YEARS</title>
+
+    <!--bootstrap for styling-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- content -->
+        <h1>GLOBAL POPULATION OVER THE YEARS</h1>
+        <!-- <p class="lead">By YOUR NAMES HERE</p> -->
+
+        <!-- more html content can go here; e.g., any control buttons -->
+        <div>
+            Region:
+            <input type="text" name="region" id='region'>
+            <input type="radio" name="gender" value="both" id="both" checked> Both
+
+            <input type="radio" name="gender" value="male" id="male"> Male
+            <input type="radio" name="gender" value="female" id="female"> Female
+            <input type="submit" name="submit" id='submit'>
+
+        </div>
+        </br>
+        <div id="visContainer"></div>
+        <!-- A container to hold the visualization -->
+
+        <!-- more html content can go here, e.g., further details or explanations -->
+
+        <p id="citation">Data Sources:
+            <a href=https://www.kaggle.com/theworldbank/global-population-estimates>https://www.kaggle.com/theworldbank/global-population-estimates</a>
+            <br>
+            <a href=http://gsociology.icaap.org/dataupload.html '>http://gsociology.icaap.org/dataupload.html</a></p>
+    </div>
+
+    <!-- JavaScript modules -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="visualization.js"></script>
+</body>
+
+</html>

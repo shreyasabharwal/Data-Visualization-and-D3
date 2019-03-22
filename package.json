@@ -1,0 +1,14 @@
+{
+  "name": "a8-visualization",
+  "version": "1.0.0",
+  "private": true,
+  "main": "a8-visualization.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "d3": "^5.4.0"
+  }
+}
